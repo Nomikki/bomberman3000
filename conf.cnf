@@ -1,0 +1,15 @@
+screenX = 640
+screenY = 480
+fullscreen = 0
+framecap = 60
+vsync = 0
+masterVolume = 100.00
+musicVolume = 50.00
+soundVolume = 80.00
+fontSize = 1.00
+ipAddr = 192.168.0.100
+tcpPort = 7000
+udpPortSEND = 1234
+udpPOrtLISTEN = 1234
+tickrate = 20
+playername = unnamed hero!

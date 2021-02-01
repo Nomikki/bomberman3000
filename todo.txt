@@ -1,0 +1,235 @@
+bomberman-klooni:
+
+Nettipelattava klooni bombermanista.
+Ominaisuuksia:
+- päävalikko
+- lobby
+- chatti
+- maksimipelaajamäärä (esim. 8)
+- itse pelitila
+
+- Pommin voi tiputtaa, sillä on aika koska se räjähtää
+- Riippuen mitä ominaisuuksia pelaajalla on, vaikuttaa ne pommeihin myös:
+	- voi asettaa kaksi tai kolmekin pommia kerralla
+	- ajastetut pommit (paina uudestaan pomminäppäintä ja se räjäyttää)
+	- tulivoiman kasvattaminen (3*3 -> 6*6 esim.)
+	- oman pommin tönäiseminen kulkusuuntaa kohti
+	- immuuni omille räjähdyksille
+	
+	Ominaisuuksia voi olla kerralla vain yksi päällä, eli ei voi olla ajastettuja pommeja joita voi töniä ja kasvattaa tulivoimaa. Kun ottaa uuden ominaisuuden korvaa se edellisen.
+	
+	Pelaajalla on x määrä elämiä, peli loppuu kun on enää yksi pelaaja jäljellä, ja riippuen montako elämää on jäljellä, sen myötä sille tulee pisteitä. Esim. jos voittaa muut ja on kaksi elämää jäljellä, saa tämä kaksi pistettä.
+	
+	Peli kun loppuu, siirrytään takaisin lobbyyyn jossa on chatti, näkyy muut pelaajat ja pistemäärät.
+
+	
+Moodi:
+- normaali
+- LoS - ei voi nähdä esteiden taakse
+- Kutistuva mappi - mappi kutistuu n sekunnin välein hieman, pakottaen pelaajat lähemmäs toisiaan
+- 
+	
+- aloituslaskuri joka synkronoituu muiden kanssa (3 sekuntia ja "lukko" aukeaa)
+	% -> palvelin lähettää readyn
+	-> kaikki clientit vastaa
+	-> kun saatu kaikki clientien ready-kuittaukset, lähetetään aloituslaskuri
+	-> client kun saa aloituslaskurin, alkaa peli clientillä
+
+todo:
+Tehty:
+- sfml:n linkitys
+- ikkuna
+- näppäimistötuki
+- resurssienhallinta (ttf-fontit, png-kuvat, tiedostoista latailu, käyttö projektissa, bindaukset)
+- rendaus puskuriin
+- puskurin zoomaukset
+- puskurin rendaus ruudulle
+- näppäimistöhändleri
+- rottahändleri
+- ikkunan kokoa voi muuttaa
+- framelimitit
+- vsync
+- fullscreen/windowed-moodi
+- settings-järjestelmä (generoi oletusasetukset, lataa asetukset, tallentaa asetukset, splitteri, tiedostojen käpistely)
+- kamerajärjestelmä (sulava liike, hieman liukuva)
+- karkea menu-koodi
+- loading-ikkuna
+- tcp-runko
+	- serverin luominen
+	- clientin luominen 
+	- kommunikointi (tcp-tasolla viestin liikuttelu)
+	- disconnect-ominaisuudet 
+	- timeoutit
+	- client-osuudet listoissa, tuki monelle clientille
+	- selektorin hyödyntäminen (jos jokin clienteistä ei ole valmis, voidaan hypätä tarkistamaan seuraava ilman että softa jäätyy)
+- chatin runko 
+	- viestin lähettäminen
+	- viestien vastaanottaminen
+	- näytetään 10 uusinta viestiä (pitää muistissa tosin koko historian)
+	- chatin tyhjennys
+	- input-järjestelmä joka tukee unicode-merkistöä (skandit ja muut merkit käytössä), backspacella kumittaa
+- fps-laskuri
+- delta-ajan laskuri 
+
+ - udp-puolen koodi (käytetään liikedatan lähettämiseen, kaikki muu menee lähinnä tcp:llä.)
+	 -enet otettu käyttöön
+	 -udp-bindaukset (mitä porttia kuunnellaan)
+	 - datan lähetys udp:llä (client osaa lähettää servulle)
+	 - datan nappaaminen udp:llä (serveri osaa napata datan)
+	 - serveri broadcastaa datan 
+	 - serveri osaa käyttää samoja sendmsg-funktioita
+		
+- siirtyminen lobbystä peliin 
+- pelistä lobbyyn siirtyminen 
+- mapin generointi
+- pelin rendaus 
+
+- id-listan jako:
+	- serveri rakentaa id-listan (oletuksena kaikki vapaana, laskettu 0...MAX_PLAYERS-1)
+	- joku joinaa: otetaan listalta ensimmäinen id, kerrotaan se clientille, poistetaan listalta
+	- client ottaa id:n talteen ja sillä ilmaisee itseään muille
+	- clientin poistuessa, ilmoittaa se id:nsä, tämä lisätään serverin id-listaan
+
+- hahmot
+- liikkuminen lokaalisti
+- liikedatan vieminen servulle
+- servun puolella liikedatan käsittely ja lähettäminen clienteille 
+- clientien puolella liikedatan käsittely 
+- törmäystarkistukset (esteisiin, hahmoihin, aktiivisiin objekteihin)
+- chatti myös pelin puolella (hyödynnetään lobbyn chattia)
+
+- pingpong-testit
+	-> viiden sekunnin välein esim. pingpong 
+	-> otetaan aika talteen, saadaan paluuarvo, verrataan sitä lähetettyyn ja tehdään erotus = ping-arvo
+
+- saman mapin jakaminen muille (hosti lähettää srand-arvon)	
+
+- pommin tiputtaminen (josta viesti servulle)
+- servu lähettää tiedon muille mihin on pudotettu pommi 
+- muut osaa asettaa pommin lifetimet ja muut arvot kuntoon
+
+- pommien logiikkapuoli clienteille 
+- pommien räjähtelyt ja vaikutus karttaan josta päivitys kaikille 
+- kuolemat jos osuu pommin räjähdykseen
+
+- speedboost
+- voi asettaa kaksi tai kolmekin pommia kerralla
+- tulivoiman kasvattaminen (3*3 -> 6*6 esim.)
+
+- moodit (itemit jotka on bännätty, mappimoodi)
+	-> itemit 
+	-> sääntöjen lähettäminen clienteille myös 
+	-> los päällä/ei päällä 
+
+- animaatiotuki
+	
+- tarkista ettei udp-dataa lähetetä takaisin sille joka sitä on lähettänyt
+	-> tarkistettu, kaikki ok, koska korjattu
+	
+- disconnect-bugi korjattu clientin puolelta 
+- animaatiotuet myös sendattuna clientiltä toiselle (näkee toisen liikeen myös)
+- kuolinanimaatio
+
+- lobbyyn nimilista (päivittyy kun joku joinaa, lähtee jne.)
+	- joinit toimii
+	- nimien kysely toimii
+	- jos joku poistuu, siitä pitäisi saada tieto
+
+- spectausmoodi (voidaan seurata eri pelaajia)
+
+- voittoanimaatio/tila 
+- ei voida specatata hahmoja joita ei ole
+
+- korjattu: kun kuollaan, lähetetään tieto muille clienteille (ettei tule synkronointivirheen vuoksi vääriä tietoja)
+
+- korjattu: bugi: näytetään pelaajahahmot/nimet oikein
+	- sortattiin lista uusiksi
+
+- korjattu: jos lähdetään pelistä ja joinataan takaisin, käynnistetään matsi, se ilmoittaa että pelaaja kuollut
+	
+- asetukset-ikkuna ja asetusten säätö/tallennus 
+- ip:n ja portin asettaminen
+
+- tehdään vain sen verran pelaajia ruudulle kuin niitä on yhdistyneenäkin
+	
+- äänimoduuli
+ - äänikanavat
+ - resurssien puolelle äänet
+ - stereopanorointi
+ - mikseri
+ - shotit ja loopit
+ - pitchaukset
+
+
+- ip:n ja portin asettaminen pelin sisällä
+- nickin asettaminen
+
+- ajastinpommit
+	-> item-struktuuriin ownerID, aina kun lisätään pommi, lisätään ownerID, (samaa tietoa lähetetään servulle)
+	-> voidaan räjäyttää kun painetaan uudestaan spacea
+
+- mappi pienenee vähitellen
+- laskuri joka pienentää karttaa joka 30. sekunti 
+
+- äänet eri asioille kuntoon	
+Äänet:	
+ - askeläänet
+ - räjähdys
+ - powerupin ottaminen
+ - pommin tiputtaminen
+ - kuolemat 
+ - voitto 
+ - aloituslaskuri
+ - menuliike
+ - menuvalinta
+	
+
+- pommin tönäiseminen kulkusuuntaa kohti
+	- ei tarvitse edes olla oma. jos tönäisee, tulee pieni knockout, pommi räjähtää ajan täyttyessä
+
+- voittolaskurin aikaa vähennetty 7 -> 5 sekuntia 
+
+- verkkokoodi omaan threadiin
+- äänikoodi omaan threadiin 
+
+Tekemättä:
+! - jos fps liian alhainen, kamera sekoaa ja peli kaatuu
+! - jos lähtee kesken kaiken (voiton aikana esim.) servu kaatuu
+	-> koittaa rendata jotain mitä ei ole, tiedän ongelman, mutten ole varma miten korjaisin sen järkevästi		
+- pientä jumittelua kun otin äänet käyttöön, pitää tarkistaa johtuuko juurikin niistä
+ -> ei näköjään, enemmänkin liukuvassa liikkeessä
+ 
+% - äänten  voimakkuus otetaan asetuksista
+- musiikin voimakkuus otetaan asetuksista
+ 
+otetaan pois
+{
+	% - pistelaskuri (lobbyssä näkyy kuka on voittanut montakin kertaa)
+	- servu lähettää voitot myös muille 
+}
+
+- serveri ylläpitää tietoa mapin muutoksista ja lähettää päivitetyn version clienteille 
+
+% - lobbyyn ready-ominaisuus (kaikki kun valmiita, siirrytään peliin)
+%	- placeholderiksi: kun hosti on valmis, alkaa peli
+% - serveri ylläpitää tietoa ovatko muut pelissä vai missä tilassa
+- näytetään lobbyssä jos muut ovat pelissä (sekä muut tarvittavat tilat)
+
+- nähtävästi liukuvat pommit ei näy aina oikein, tarkistetaan
+	-> ei toimi täysin oikein, confirmed
+	
+- musiikki (play, stop, pause, resume)
+- fonttien skaalaus käyttöliittymässä
+
+
+- zlibin hyödyntäminen tiedon pakkaukseen
+- kontrollerituki
+- hahmon kustomointi lobbyssä (naama, jalat, kädet)
+- hahmon kustomoinnin tallennus ja lataus 
+
+- kun kaikki alkaa toimia
+	- siistitään koodia
+	- kapseloidaan sitä
+	- vähennetään verkkomaisia riippuvuuksia ja tilalle putkimaisia rajapintoja
+	- verkkokoodi, rendauskoodi, menukoodi, settings-koodi ja äänimoduulit irroitetaan projektista ja tehdään niistä moottori jota voi hyödyntää jatkossakin
+	
